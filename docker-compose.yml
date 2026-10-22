@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    image: ghcr.io/chandramohanm069-debug/todo-practice:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      # hostname is "db", not "localhost" - inside compose, services
+      # find each other by name. This is the fix for the standalone
+      # run's MongoDB connection error.
+      - MONGO_URL=mongodb://db:27017/todos
+
+  db:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      # Keeps the database files around even if this container gets
+      # deleted. Without this, deleting the container wipes the data.
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
